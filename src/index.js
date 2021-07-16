@@ -1,2 +1,2 @@
 import './sass/main.scss';
-// import APi from './js/apiService';
+import './js/search-photo.js';

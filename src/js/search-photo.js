@@ -1,26 +1,31 @@
-import API from './apiService.js';
 import refs from './get-refs';
+import ImagesApiService from './apiService.js';
+import photoCardsTpl from '../templates/photo-card.hbs';
+
+const imagesApiService = new ImagesApiService();
 
 refs.formEl.addEventListener('submit', onSearch);
+refs.loadButtonEl.addEventListener('click', onLoadMore);
 
-function onSearch(evt) {
-  evt.preventDefault();
+function onSearch(e) {
+  e.preventDefault();
 
-  const searcQuery = evt.target.value;
+  imagesApiService.query = e.currentTarget.elements.query.value;
+  imagesApiService.resetPage();
+  imagesApiService.fetchImages().then(hits => {
+    clearGallery();
+    appendPhotoCardsMarcup(hits);
+  });
+}
 
-  if (searcQuery) {
-    API.fetchPhoto(searcQuery)
-      .then(photo => {
-        if (photo.length === 1) {
-          console.log(searcQuery);
+function onLoadMore() {
+  imagesApiService.fetchImages().then(appendPhotoCardsMarcup);
+}
 
-          //   renderCountryCard(country);
-          //   onSuccessFullRequest();
-        }
-        return;
-      })
-      .catch(err => {
-        onFetchError();
-      });
-  }
+function appendPhotoCardsMarcup(hits) {
+  refs.galleryEl.insertAdjacentHTML('beforeend', photoCardsTpl(hits));
+}
+
+function clearGallery() {
+  refs.galleryEl.innerHTML = '';
 }

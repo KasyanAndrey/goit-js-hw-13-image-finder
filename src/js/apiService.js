@@ -1,28 +1,34 @@
-// const options = {
-//   headers: {
-//     Autorization: '20167067-fa9a23327fba47dd7ecb29229',
-//   },
-// };
+export default class ImagesApiService {
+  constructor() {
+    this.searcQuery = '';
+    this.page = 1;
+  }
 
-// const url =
-//   'https://pixabay.com/api/?image_type=photo&orientation=horizontal&q=yellow+flower&page=1&per_page=12&key=20167067-fa9a23327fba47dd7ecb29229';
+  fetchImages() {
+    return fetch(
+      `https://pixabay.com/api/?image_type=photo&orientation=horizontal&q=${this.searcQuery}&page=${this.page}&per_page=12&key=20167067-fa9a23327fba47dd7ecb29229`,
+    )
+      .then(response => response.json())
+      .then(data => {
+        this.incrementPage();
 
-// return fetch(url)
-//   .then(response => response.json())
-//   .then(images);
+        return data.hits;
+      });
+  }
 
-const BASE_URL = 'https://pixabay.com/api/';
-// const API_KEY = '20167067-fa9a23327fba47dd7ecb29229';
+  incrementPage() {
+    this.page += 1;
+  }
 
-// const url =
-//   'https://pixabay.com/api/?image_type=photo&orientation=horizontal&q=`${searcQuery}`&page=1&per_page=12&key=20167067-fa9a23327fba47dd7ecb29229';
+  resetPage() {
+    this.page = 1;
+  }
 
-function fetchPhoto(searcQuery) {
-  return fetch(
-    `${BASE_URL}?image_type=photo&orientation=horizontal&q=${searcQuery}&page=1&per_page=12&key=20167067-fa9a23327fba47dd7ecb29229`,
-  ).then(response => {
-    return response.json();
-  });
+  get query() {
+    return this.searcQuery;
+  }
+
+  set query(newQuery) {
+    this.searcQuery = newQuery;
+  }
 }
-
-export default { fetchPhoto };

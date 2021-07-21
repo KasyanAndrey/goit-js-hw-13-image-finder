@@ -1,35 +1,52 @@
-import refs from './get-refs';
 import ImagesApiService from './apiService.js';
-import photoCardsTpl from '../templates/photo-card.hbs';
 
-// import * as basicLightbox from 'basiclightbox';
-
-const imagesApiService = new ImagesApiService();
+import refs from './get-refs';
+import renderPhotoCard from '../js/photo-card.js';
+import {
+  onImageTitle,
+  onSpecificEnoughAlert,
+  onSuccessFullRequest,
+  onFetchError,
+} from './notifications.js';
+import onLargeImageClick from './basicLightbox.js';
 
 refs.formEl.addEventListener('submit', onSearch);
 refs.loadButtonEl.addEventListener('click', onLoadMore);
+refs.galleryEl.addEventListener('click', onLargeImageClick);
 refs.loadButtonEl.classList.add('is-hidden');
+
+const imagesApiService = new ImagesApiService();
 
 function onSearch(e) {
   e.preventDefault();
+  clearGallery();
 
-  imagesApiService.query = e.currentTarget.elements.query.value;
-  if (imagesApiService.query === '') {
-    return alert('Enter your request!');
-  }
+  imagesApiService.query = e.currentTarget.elements.query.value.trim();
   imagesApiService.resetPage();
+
+  if (!imagesApiService.query) {
+    onImageTitle();
+    return;
+  }
+
   imagesApiService
     .fetchImages()
     .then(hits => {
-      clearGallery();
-      appendPhotoCardsMarcup(hits);
-      refs.loadButtonEl.classList.remove('is-hidden');
-      if (hits.length < 12) {
+      console.log(hits);
+
+      if (hits.length >= 12) {
+        renderPhotoCard(hits);
+        refs.loadButtonEl.classList.remove('is-hidden');
+        onSuccessFullRequest();
+      }
+
+      if (hits.length === 0) {
         refs.loadButtonEl.classList.add('is-hidden');
+        onSpecificEnoughAlert();
       }
     })
     .catch(err => {
-      console.log('error');
+      onFetchError();
     });
 }
 
@@ -37,7 +54,13 @@ function onLoadMore() {
   imagesApiService
     .fetchImages()
     .then(hits => {
-      appendPhotoCardsMarcup(hits);
+      renderPhotoCard(hits);
+
+      if (hits.length < 12) {
+        renderPhotoCard(hits);
+        refs.loadButtonEl.classList.add('is-hidden');
+      }
+
       const element = refs.loadButtonEl;
 
       element.scrollIntoView({
@@ -46,18 +69,10 @@ function onLoadMore() {
       });
     })
     .catch(err => {
-      console.log('error');
+      onFetchError();
     });
-}
-
-function appendPhotoCardsMarcup(hits) {
-  refs.galleryEl.insertAdjacentHTML('beforeend', photoCardsTpl(hits));
 }
 
 function clearGallery() {
   refs.galleryEl.innerHTML = '';
 }
-
-// const onLargeImageClick = e => {
-//   basicLightbox.create(`<img src="${e.target.alt}">`).show(e);
-// };

@@ -11,7 +11,13 @@
       crossorigin="anonymous"
     />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-    <!-- <link rel="stylesheet" href="../node_modules/basiclightbox/dist/basicLightbox.min.css" /> -->
+    <link href="../node_modules/@pnotify/core/dist/PNotify.css" rel="stylesheet" type="text/css" />
+    <link
+      href="../node_modules/@pnotify/mobile/dist/PNotifyMobile.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link rel="stylesheet" href="../node_modules/basiclightbox/dist/basicLightbox.min.css" />
   </head>
   <body>
     <!-- Так добавляются фрагменты в главные HTML-файлы страниц. -->
@@ -20,7 +26,7 @@
     <include src="./partials/button.html"></include>
 
     <!-- Скрипт идёт последним в разметке. В нём уже подключен главный SASS-файл. -->
-    <!-- <script src="../node_modules/basiclightbox/dist/basicLightbox.min.js"></script> -->
+    <script src="../node_modules/basiclightbox/dist/basicLightbox.min.js"></script>
     <script src="./index.js"></script>
   </body>
 </html>
